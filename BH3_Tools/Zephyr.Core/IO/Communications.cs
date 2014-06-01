@@ -64,7 +64,6 @@ namespace Zephyr.IO
         private static CRC8 crc = new CRC8(0x8c);
         private static byte[] request = new byte[] { STX, MSG_ID_GET_LOG, DLC, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, ETX };
         private static SerialPort vcp = new SerialPort();
-		private static bool isSerial = true;
 
         /// <summary>
         /// Syncronously obtains a directory of the log sessions on a device,
@@ -351,17 +350,12 @@ namespace Zephyr.IO
                 request[7] = offsetBytes[3];
                 request[8] = nb;
                 request[9] = crc.Calculate(request.Skip(3).Take(6).ToArray());
-                if (isSerial)
-                {
-                    vcp.Write(request, 0, 11);
-                }
+
+				vcp.Write(request, 0, 11);
 
                 int r = 0;
-                if (isSerial)
-                {
-                    while ((r += vcp.Read(answer, r, nb + 5 - r)) < nb + 5)
-                    {
-                    }
+				while ((r += vcp.Read(answer, r, nb + 5 - r)) < nb + 5)
+				{
                 }
 
                 Array.Copy(answer, 3, response, read, nb);
@@ -380,9 +374,6 @@ namespace Zephyr.IO
         /// <param name="portName">The port name to open</param>
 		private static void Open(string portName)
         {
-            // NOTE: detect if this is a COM port, or the serial number of a USB device
-            // 'COM' = COM port, 'CNC' = COM0COM
-			//isSerial = portName != null && (portName.StartsWith("COM") || portName.StartsWith("CNC"));
 			vcp.BaudRate = 115200;
             vcp.DataBits = 8;
             vcp.Parity = Parity.None;
@@ -399,13 +390,10 @@ namespace Zephyr.IO
         /// </summary>
         private static void Close()
         {
-            if (isSerial)
+			if (vcp.IsOpen)
             {
-                if (vcp.IsOpen)
-                {
-                    vcp.Close();
-                }
-            }
+                vcp.Close();
+			}
         }
 
         /// <summary>

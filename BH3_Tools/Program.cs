@@ -28,25 +28,45 @@ namespace BH3_Tools
 			#region ArgParsing
 			string action = null;
 			string argument = null;
+			string device = "usb";
+
+			var serialDevice = "/dev/tty.usbmodemfa131"; //default to USB
 
 			try {
 				action = args [0];
-				if (action != "download" && action != "list") {
-					throw new Exception ("Wrong action!");
-				}
 
 				if (action == "download") {
 					argument = args [1];
+					try {
+						device = args [2];
+					} catch {}
+				} else if (action == "list"){
+					try {
+						device = args [1];
+					} catch {}
+				} else {
+					throw new Exception ("Wrong action!");
+				}
+
+				try {
+					if (device == "usb") {
+						// the default is already USB
+					} else if (device == "bt") {
+						serialDevice = "/dev/tty.BHBHT007929-iSerialPort1";
+					} else {
+						serialDevice = device; // otherwise use the given string
+					}
+				} catch {
+					// nothing!
 				}
 
 			} catch {
-				Console.WriteLine ("Usage: dl.exe [list|download] [session_id]");
+				Console.WriteLine ("Usage: BH3_Tools.exe [list|download session_id] (usb|bt|$custom)");
 				return 1;
 			}
 			#endregion
 
 			Console.WriteLine ("Welcome to the BioHarness 3 Log Downloader\n");
-			var serialDevice = "/dev/tty.usbmodemfa131";
 
 			if(!testPort(serialDevice)){
 				Console.WriteLine ("It looks like the device is not connected!");
@@ -72,12 +92,15 @@ namespace BH3_Tools
 				var mySession = sessionData[Int32.Parse(argument)];
 				printSession (mySession);
 
+				Console.WriteLine (String.Format ("Transmitting data..."));
 				var myData = BioHarnessCommunications.SyncLoadData ("/dev/tty.usbmodemfa131", mySession);
-				Console.WriteLine (myData.Length);
-				string outDir = "/tmp/";  // needs trailing slash
+				Console.WriteLine (String.Format("Received {0} bytes.", myData.Length));
+
+				string outDir = Directory.GetCurrentDirectory() + "/"; // needs trailing slash
+				Console.WriteLine (String.Format ("Saving files in {0}", outDir));
 				CsvConverter.CreateStandardCSVFiles (mySession, myData, outDir);
 				CsvConverter.CreateAccelCSVFiles (mySession, myData, outDir);
-
+				Console.WriteLine ("Done.");
 			}
 
 			return 0;
