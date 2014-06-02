@@ -12,8 +12,8 @@ It's easiest to use [Xamarin Studio](http://xamarin.com/download) to build this 
 
 You may have to change the device name. The BH3 usually appears as something 
 like `/dev/tty.usbmodemfa131` if connected via USB and `/dev/tty.BHBHT007929-iSerialPort1` via Bluetooth.
-You can specify the device location as the last argument on the commandline.
-Downloading CSV files via Bluetooth is possible, but listing the sessions is.
+You can specify the device location as the last argument on the commandline or change the strings in the source.
+Downloading CSV files via Bluetooth is not possible, but listing the sessions is.
 
 Deleting sessions is not possible (yet).
 
@@ -21,10 +21,10 @@ Deleting sessions is not possible (yet).
 
     $ mono BH3_Tools.exe list
     Welcome to the BioHarness 3 Log Downloader
-
+    
     Checking Serial Device /dev/tty.usbmodemfa131
     Available Sessions:
-
+    
     Session 0
     ===========================
     = When: 3/14/2014 8:28:29 AM
@@ -38,8 +38,8 @@ Deleting sessions is not possible (yet).
     = Dur.: 0h 37m
     = Size: 2243kb
     ===========================
- 
-	$ mono bin/Debug/BH3_Tools.exe download 8
+     
+    $ mono bin/Debug/BH3_Tools.exe download 8
     Welcome to the BioHarness 3 Log Downloader
 
     Checking Serial Device /dev/tty.usbmodemfa131
