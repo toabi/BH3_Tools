@@ -1,4 +1,8 @@
-﻿using System.IO;
+﻿/*
+ * Taken from the Zepyhr BioHarness Bluetooth SDK.
+ */
+
+using System.IO;
 using System;
 using System.Globalization;
 
